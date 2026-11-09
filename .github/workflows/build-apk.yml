@@ -34,7 +34,7 @@ jobs:
         run: npx vite build
 
       - name: Add Capacitor
-        run: npm install --no-save --no-audit --no-fund --ignore-scripts @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 -w ${{ env.APP_DIR }}
+        run: npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 -w ${{ env.APP_DIR }}
 
       - name: Create Android project
         working-directory: ${{ env.APP_DIR }}
