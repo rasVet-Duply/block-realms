@@ -36,7 +36,7 @@ jobs:
         run: npx vite build
 
       - name: Install Capacitor
-        run: npm install --legacy-peer-deps --no-save --no-audit --no-fund @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+        run: npm install --legacy-peer-deps --no-save --no-audit --no-fund @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 sharp
 
       - name: Create Android project
         run: |
@@ -44,6 +44,75 @@ jobs:
             npx cap add android
           fi
           npx cap sync android
+
+      - name: Fullscreen mode
+        run: |
+          MAIN=$(find android/app/src/main/java -name MainActivity.java | head -n1)
+          PKG=$(grep -m1 '^package ' "$MAIN" | sed 's/package \(.*\);/\1/')
+          cat > "$MAIN" <<EOF
+          package $PKG;
+
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.view.WindowManager;
+          import androidx.core.view.WindowCompat;
+          import androidx.core.view.WindowInsetsCompat;
+          import androidx.core.view.WindowInsetsControllerCompat;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
+              super.onCreate(savedInstanceState);
+              if (Build.VERSION.SDK_INT >= 28) {
+                getWindow().getAttributes().layoutInDisplayCutoutMode =
+                  WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+              }
+              hideSystemBars();
+            }
+
+            @Override
+            public void onWindowFocusChanged(boolean hasFocus) {
+              super.onWindowFocusChanged(hasFocus);
+              if (hasFocus) hideSystemBars();
+            }
+
+            private void hideSystemBars() {
+              WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+              WindowInsetsControllerCompat c =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+              c.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+              c.hide(WindowInsetsCompat.Type.systemBars());
+            }
+          }
+          EOF
+
+      - name: App icon
+        run: |
+          if [ ! -f icon.png ]; then
+            echo "icon.png not found in repo root, skipping icon"
+            exit 0
+          fi
+          cat > make-icons.cjs <<'EOF'
+          const sharp = require('sharp');
+          const path = require('path');
+          const sizes = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
+          (async () => {
+            for (const [d, s] of Object.entries(sizes)) {
+              const dir = 'android/app/src/main/res/mipmap-' + d;
+              await sharp('icon.png').resize(s, s).png()
+                .toFile(path.join(dir, 'ic_launcher.png'));
+              const mask = Buffer.from(
+                '<svg width="' + s + '" height="' + s + '"><circle cx="' + s / 2 + '" cy="' + s / 2 + '" r="' + s / 2 + '"/></svg>'
+              );
+              await sharp('icon.png').resize(s, s)
+                .composite([{ input: mask, blend: 'dest-in' }]).png()
+                .toFile(path.join(dir, 'ic_launcher_round.png'));
+            }
+          })();
+          EOF
+          node make-icons.cjs
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
 
       - name: Build APK
         working-directory: android
