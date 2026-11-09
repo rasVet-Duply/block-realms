@@ -45,6 +45,24 @@ jobs:
           fi
           npx cap sync android
 
+      - name: Configure release signing
+        run: |
+          GRADLE=android/app/build.gradle
+          if [ ! -f "$GRADLE" ]; then
+            GRADLE=android/app/build.gradle.kts
+          fi
+          cat >> "$GRADLE" <<'EOF'
+
+          android {
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.debug
+                  }
+              }
+          }
+          EOF
+          echo "Appended release signingConfig to $GRADLE"
+
       - name: Fullscreen mode
         run: |
           MAIN=$(find android/app/src/main/java -name MainActivity.java | head -n1)
@@ -120,9 +138,24 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
+      - name: Verify APK is release (not debug)
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          if [ ! -f "$APK" ]; then
+            echo "ERROR: app-release.apk not found!"
+            find android/app/build/outputs -type f || true
+            exit 1
+          fi
+          if command -v aapt >/dev/null 2>&1; then
+            aapt dump badging "$APK" | grep -E "application-debuggable" && {
+              echo "APK is debuggable — aborting"; exit 1;
+            } || echo "APK is NOT debuggable ✅ (release build)"
+          fi
+          ls -la "$APK"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BlockRealms3D-apk
+          name: BlockRealms3D-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
