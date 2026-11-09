@@ -1,0 +1,8 @@
+{
+  "appId": "com.blockrealms.puzzle3d",
+  "appName": "Block Realms 3D",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#0b0716"
+  }
+}

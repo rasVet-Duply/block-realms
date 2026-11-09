@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Auto-restored theme variables */
+    --shadow-x: 0px;
+    --shadow-y: 1px;
+    --shadow-blur: 4px;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0.2;
+    --shadow-color: #000000;
+    --shadow-2xs: var(--shadow-x) var(--shadow-y) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-xs: var(--shadow-x) var(--shadow-y) var(--shadow-blur) var(--shadow-spread) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-sm: var(--shadow-x) var(--shadow-y) calc(var(--shadow-blur) * 1.5) var(--shadow-spread) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-md: calc(var(--shadow-x) * 2) calc(var(--shadow-y) * 2) calc(var(--shadow-blur) * 3) calc(var(--shadow-spread) - 1px) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-lg: calc(var(--shadow-x) * 4) calc(var(--shadow-y) * 4) calc(var(--shadow-blur) * 5) calc(var(--shadow-spread) - 3px) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-xl: calc(var(--shadow-x) * 6) calc(var(--shadow-y) * 6) calc(var(--shadow-blur) * 7) calc(var(--shadow-spread) - 5px) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+    --shadow-2xl: calc(var(--shadow-x) * 8) calc(var(--shadow-y) * 8) calc(max(0px, var(--shadow-blur) * 9 - 8px)) calc(var(--shadow-spread) - 12px) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 250%), transparent);
+    --shadow: var(--shadow-md);
+  }
+}
+
+@layer base {
+  :root, .dark {
+    --background: 250 35% 7%;
+    --foreground: 40 30% 97%;
+    --card: 250 30% 12%;
+    --card-foreground: 40 30% 97%;
+    --popover: 250 30% 11%;
+    --popover-foreground: 40 30% 97%;
+    --primary: 38 100% 58%;
+    --primary-foreground: 250 40% 10%;
+    --secondary: 250 25% 18%;
+    --secondary-foreground: 40 30% 97%;
+    --muted: 250 22% 16%;
+    --muted-foreground: 250 15% 70%;
+    --accent: 330 95% 64%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 20% 24%;
+    --input: 250 20% 24%;
+    --ring: 38 100% 58%;
+    --radius: 1rem;
+    --chart-1: 38 100% 58%;
+    --chart-2: 330 95% 64%;
+    --chart-3: 190 90% 55%;
+    --chart-4: 140 70% 55%;
+    --chart-5: 270 80% 65%;
+    --sidebar-background: 250 30% 10%;
+    --sidebar-foreground: 40 30% 97%;
+    --sidebar-primary: 38 100% 58%;
+    --sidebar-primary-foreground: 250 40% 10%;
+    --sidebar-accent: 250 25% 18%;
+    --sidebar-accent-foreground: 40 30% 97%;
+    --sidebar-border: 250 20% 24%;
+    --sidebar-ring: 38 100% 58%;
+    --font-sans: 'Outfit', sans-serif;
+    --font-serif: 'Fredoka', sans-serif;
+    --font-mono: ui-monospace, monospace;
+  }
+  * { @apply border-border; }
+  html, body, #root { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body { @apply bg-background text-foreground font-sans antialiased; -webkit-tap-highlight-color: transparent; user-select: none; }
+}
+
+@layer components {
+  .font-display { font-family: 'Fredoka', sans-serif; }
+  .glass { @apply bg-background/60 backdrop-blur-xl border border-white/10 shadow-2xl; }
+  .btn-game { @apply font-display font-semibold rounded-2xl transition-all active:scale-95; }
+  .btn-primary { @apply btn-game bg-primary text-primary-foreground shadow-[0_6px_0_hsl(28_90%_38%),0_14px_30px_-6px_hsl(38_100%_50%/0.6)] hover:brightness-110; }
+  .btn-soft { @apply btn-game bg-white/10 text-foreground border border-white/15 hover:bg-white/15 backdrop-blur-md; }
+  .text-shadow { text-shadow: 0 2px 12px rgba(0,0,0,0.45); }
+  .frame-rot { animation: frame-rot linear infinite; }
+  .frame-rot-rev { animation: frame-rot linear infinite reverse; }
+  .frame-pulse { animation: frame-pulse 2.2s ease-in-out infinite; }
+  .frame-float { animation: frame-float 2.6s ease-in-out infinite; }
+}
+
+@keyframes frame-rot { to { transform: rotate(360deg); } }
+@keyframes frame-pulse { 0%, 100% { opacity: 0.55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@keyframes frame-float { 0%, 100% { transform: translate(-50%, -55%); } 50% { transform: translate(-50%, -70%); } }
