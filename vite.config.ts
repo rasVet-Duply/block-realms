@@ -70,7 +70,7 @@ export default defineConfig(({ command }) => ({
     dedupe: ['react', 'react-dom'],
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@project/components/lib': path.resolve(__dirname, './src/lib'),
+      '@project/components': path.resolve(__dirname, './src/components'),
       "zitejs/auth/base": path.resolve(__dirname, "../../node_modules/zitejs/dist/esm/auth/index.js"),
       "zitejs/backend/base": path.resolve(__dirname, "../../node_modules/zitejs/dist/esm/backend/index.js"),
       "zitejs/db": path.resolve(__dirname, "../../.zite/db.ts"),
