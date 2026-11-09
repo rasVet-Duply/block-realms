@@ -9,9 +9,6 @@ jobs:
   apk:
     runs-on: ubuntu-latest
 
-    env:
-      APP_DIR: apps/3d-block-puzzle-premium
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,24 +30,23 @@ jobs:
           packages: 'platform-tools'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
+        run: npm install --legacy-peer-deps --no-audit --no-fund
 
       - name: Build web game
-        working-directory: ${{ env.APP_DIR }}
         run: npx vite build
 
       - name: Install Capacitor
-        run: npm install --legacy-peer-deps --no-save --no-audit --no-fund --ignore-scripts @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 -w ${{ env.APP_DIR }}
+        run: npm install --legacy-peer-deps --no-save --no-audit --no-fund @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
 
       - name: Create Android project
-        working-directory: ${{ env.APP_DIR }}
         run: |
-          [ -d android ] || npx cap add android
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
           npx cap sync android
-          sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
 
       - name: Build APK
-        working-directory: ${{ env.APP_DIR }}/android
+        working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
@@ -59,5 +55,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: BlockRealms3D-apk
-          path: ${{ env.APP_DIR }}/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
